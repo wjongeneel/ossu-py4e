@@ -14,3 +14,5 @@ https://www.py4e.com/html3/02-variables
 #### Conditional execution
 https://www.py4e.com/html3/03-conditional
 
+### Functions
+https://www.py4e.com/html3/04-functions
