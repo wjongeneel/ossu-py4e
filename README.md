@@ -19,3 +19,9 @@ https://www.py4e.com/html3/04-functions
 
 #### iteration
 https://www.py4e.com/html3/05-iterations
+
+#### Strings
+https://www.py4e.com/html3/06-strings
+
+#### Files
+https://www.py4e.com/html3/07-files
