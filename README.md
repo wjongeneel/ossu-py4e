@@ -25,3 +25,9 @@ https://www.py4e.com/html3/06-strings
 
 #### Files
 https://www.py4e.com/html3/07-files
+
+#### lists
+https://www.py4e.com/html3/08-lists
+
+#### dictionaries
+https://www.py4e.com/html3/09-dictionaries
