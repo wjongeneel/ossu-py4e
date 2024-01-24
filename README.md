@@ -31,3 +31,6 @@ https://www.py4e.com/html3/08-lists
 
 #### dictionaries
 https://www.py4e.com/html3/09-dictionaries
+
+#### tuples
+https://www.py4e.com/html3/10-tuples
