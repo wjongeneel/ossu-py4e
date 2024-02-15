@@ -34,3 +34,15 @@ https://www.py4e.com/html3/09-dictionaries
 
 #### tuples
 https://www.py4e.com/html3/10-tuples
+
+#### regular expressions
+https://www.py4e.com/html3/11-regex
+
+#### networked programs
+https://www.py4e.com/html3/12-network
+
+#### using web services
+https://www.py4e.com/html3/13-web
+
+#### object-oriented programming
+https://www.py4e.com/html3/14-objects
