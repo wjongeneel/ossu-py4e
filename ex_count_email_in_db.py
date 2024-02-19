@@ -17,7 +17,6 @@ try:
 except:
     print(f'cannot open file: {name}')
 
-i = 0
 for line in handle:
     if not line.startswith('From '): continue
     org = line.rstrip().split()[1].split('@')[1]
