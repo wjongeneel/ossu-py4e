@@ -1,83 +1,63 @@
+import json
 import sqlite3
 
-# connect to db 
-conn = sqlite3.connect('tracks.sqlite')
+conn = sqlite3.connect('rosterdb.sqlite')
 cur = conn.cursor()
 
-# drop tables if they exist
-cur.execute('DROP TABLE IF EXISTS Artist')
-cur.execute('DROP TABLE IF EXISTS Genre')
-cur.execute('DROP TABLE IF EXISTS Album')
-cur.execute('DROP TABLE IF EXISTS Track')
+# Do some setup
+cur.executescript('''
+DROP TABLE IF EXISTS User;
+DROP TABLE IF EXISTS Member;
+DROP TABLE IF EXISTS Course;
 
-# create tables
-cur.execute('''
-CREATE TABLE Artist (
-    id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-    name    TEXT UNIQUE
+CREATE TABLE User (
+    id     INTEGER PRIMARY KEY,
+    name   TEXT UNIQUE
 );
+
+CREATE TABLE Course (
+    id     INTEGER PRIMARY KEY,
+    title  TEXT UNIQUE
+);
+
+CREATE TABLE Member (
+    user_id     INTEGER,
+    course_id   INTEGER,
+    role        INTEGER,
+    PRIMARY KEY (user_id, course_id)
+)
 ''')
 
-cur.execute('''
-CREATE TABLE Genre (
-    id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-    name    TEXT UNIQUE
-);
-''')
+fname = input('Enter file name: ')
+if len(fname) < 1:
+    fname = 'roster_data.json'
 
-cur.execute('''
-CREATE TABLE Album (
-    id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-    artist_id  INTEGER,
-    title   TEXT UNIQUE
-);
-''')
+#   [ "Charley", "si110", 1 ],
+#   [ "Mea", "si110", 0 ],
 
-cur.execute('''
-CREATE TABLE Track (
-    id  INTEGER NOT NULL PRIMARY KEY 
-        AUTOINCREMENT UNIQUE,
-    title TEXT  UNIQUE,
-    album_id  INTEGER,
-    genre_id  INTEGER,
-    len INTEGER, rating INTEGER, count INTEGER
-);
-''')
+str_data = open(fname).read()
+json_data = json.loads(str_data)
 
-# use tracks.csv as input
-fname = input("Enter file name: ")
-try: 
-    fh = open(fname)
-except: 
-    print('cannot open file: {}'.format(fname))
-    quit()
 
-for line in fh: 
-    # split lines of csv into elements
-    elements = line.rstrip().split(',')
+for entry in json_data:
 
-    # drop invalid lines
-    if len(elements) < 7: continue
+    name = entry[0]
+    title = entry[1]
+    role = entry[2]
 
-    # save elements into variables
-    name = elements[0]
-    artist = elements[1]
-    album = elements[2]
-    count = elements[3]
-    rating = elements[4]
-    length = elements[5]
-    genre = elements[6]
+    cur.execute('''INSERT OR IGNORE INTO User (name)
+        VALUES ( ? )''', ( name, ) )
+    cur.execute('SELECT id FROM User WHERE name = ? ', (name, ))
+    user_id = cur.fetchone()[0]
     
-    # insert data into tables 
-    cur.execute('INSERT OR IGNORE INTO Artist (name) VALUES (?)', (artist, ))
-    cur.execute('INSERT OR IGNORE INTO Genre (name) VALUES (?)', (genre, ))
-    cur.execute('SELECT id FROM Artist WHERE name = ?', (artist, ))
-    artist_id = cur.fetchone()[0]
-    cur.execute('INSERT OR IGNORE INTO Album (artist_id, title) VALUES (?, ?)', (artist_id, album))
-    cur.execute('SELECT id FROM Album WHERE title = ?', (album, ))
-    album_id = cur.fetchone()[0]
-    cur.execute('SELECT id FROM Genre WHERE name = ?', (genre,))
-    genre_id = cur.fetchone()[0]
-    cur.execute('INSERT OR IGNORE INTO Track (title, album_id, genre_id, len, rating, count) VALUES (?, ?, ?, ?, ?, ?)', (name, album_id, genre_id, length, rating, count))
+    cur.execute('''INSERT OR IGNORE INTO Course (title)
+        VALUES ( ? )''', ( title, ) )
+    cur.execute('SELECT id FROM Course WHERE title = ? ', (title, ))
+    course_id = cur.fetchone()[0]
 
-conn.commit()
+
+    cur.execute('''INSERT OR REPLACE INTO Member
+        (user_id, course_id, role) VALUES ( ?, ?, ? )''',
+        ( user_id, course_id, role ) )
+
+    conn.commit()
